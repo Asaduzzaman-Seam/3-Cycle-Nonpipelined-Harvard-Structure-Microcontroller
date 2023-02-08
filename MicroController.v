@@ -1,6 +1,6 @@
 // Project Name : 3 Cycle Nonpipeline 8 bit Harvard Structure MicroController
 // (similar to Microchip PIC12)
-// Student ID : 180105100, 180105091, 180105092, 180105095, 180105198
+// Student ID : 180105100
 
 // Module: MicroController
 module MicroController(clk,rst,current_state,next_state,load_done,load_addr,load_instr,
