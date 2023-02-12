@@ -1,0 +1,36 @@
+set_db init_lib_search_path timing_lib
+set_db library slow.lib
+set_db lef_library lef/gsclib045.lef
+set_db hdl_search_path input_files
+read_hdl MicroController.v
+elaborate 
+set_top_module MicroController
+current_design MicroController
+write_hdl > elaborated.v
+create_clock -name clk -period 12 [get_ports clk]
+set_clock_uncertainty -setup 0.5 [get_clocks clk]
+set_clock_uncertainty -hold 0.5 [get_clocks clk]
+set_max_transition 3 [get_ports clk]
+set_clock_transition -min -fall 0.5 [get_clocks clk]
+set_clock_transition -min -rise 0.5 [get_clocks clk]
+set_clock_transition -max -fall 0.5 [get_clocks clk]
+set_clock_transition -max -rise 0.5 [get_clocks clk]
+set_clock_groups -name original -group [list[get_clocks clk]]
+set DRIVING_CELL BUFX4
+set DRIVE_PIN {Y}
+set_driving_cell -lib_cell $DRIVING_CELL -pin $DRIVE_PIN [all_inputs]
+set_max_fanout 12 [current_design]
+set_load 0.5 [all_outputs]
+set_operating_conditions slow
+set_input_delay -max 0.5 [all_inputs]
+set_output_delay -max 0.6 [all_outputs] 
+remove_assign -buffer_or_inverter BUFX16 -design [current_design]
+syn_generic
+write_hdl > generic.v
+synthesize -to_mapped
+write_hdl > MicroController_syn.v
+remove_assigns_without_opt -buffer_or_inverter BUFX12 -verbose
+set_remove_assign_options -buffer_or_inverter BUFX12 -verbose
+write -mapped > MicroController_mapped.v
+write_sdc > MicroController.sdc
+
